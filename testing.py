@@ -8,12 +8,8 @@ import sys
 import time
 
 import synbiohub_adapter as sbha
-# x = sbha.SynBioHubQuery(sbha.SD2Constants.SD2_SERVER)
-# x.query_synbiohub_statistics()
 
-# x.query_design_plasmids(pretty=True)
-
-# len(x.query_design_plasmids()['results']['bindings'])
+import sd2.metric
 
 
 class Statistics:
@@ -96,22 +92,22 @@ class Statistics:
         print(msg.format(len(exp_plans)))
 
 
-class DataItem():
+# class DataItem():
 
-    def __init__(self, timestamp=0, name='', value=None):
-        self.timestamp = timestamp
-        self.name = name
-        self.value = value
-
-
-class DataMetric():
-
-    def __init__(self, url):
-        self._url = url
-        self._query = sbha.SynBioHubQuery(url)
+#     def __init__(self, timestamp=0, name='', value=None):
+#         self.timestamp = timestamp
+#         self.name = name
+#         self.value = value
 
 
-class RiboswitchesMetric(DataMetric):
+# class DataMetric():
+
+#     def __init__(self, url):
+#         self._url = url
+#         self._query = sbha.SynBioHubQuery(url)
+
+
+class RiboswitchesMetric(sd2.metric.DataMetric):
 
     def __init__(self, url):
         super().__init__(url)
@@ -128,17 +124,17 @@ class RiboswitchesMetric(DataMetric):
         result = []
         timestamp = time.time()
         dc = len(self.design_riboswitches)
-        result.append(DataItem(timestamp=timestamp,
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
                                name='Design Riboswitches',
                                value=dc))
         ec = len(self.experiment_riboswitches)
-        result.append(DataItem(timestamp=timestamp,
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
                                name='Experiment Riboswitches',
                                value=ec))
         return result
 
 
-class PlasmidsMetric(DataMetric):
+class PlasmidsMetric(sd2.metric.DataMetric):
 
     def __init__(self, url):
         super().__init__(url)
@@ -155,17 +151,17 @@ class PlasmidsMetric(DataMetric):
         result = []
         timestamp = time.time()
         dc = len(self.design_plasmids)
-        result.append(DataItem(timestamp=timestamp,
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
                                name='Design Plasmids',
                                value=dc))
         ec = len(self.experiment_plasmids)
-        result.append(DataItem(timestamp=timestamp,
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
                                name='Experiment Plasmids',
                                value=ec))
         return result
 
 
-class GatesMetric(DataMetric):
+class GatesMetric(sd2.metric.DataMetric):
 
     def __init__(self, url):
         super().__init__(url)
@@ -182,17 +178,17 @@ class GatesMetric(DataMetric):
         result = []
         timestamp = time.time()
         dc = len(self.design_gates)
-        result.append(DataItem(timestamp=timestamp,
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
                                name='Design Gates',
                                value=dc))
         ec = len(self.experiment_gates)
-        result.append(DataItem(timestamp=timestamp,
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
                                name='Experiment Gates',
                                value=ec))
         return result
 
 
-class MediaMetric(DataMetric):
+class MediaMetric(sd2.metric.DataMetric):
 
     def __init__(self, url):
         super().__init__(url)
@@ -209,17 +205,17 @@ class MediaMetric(DataMetric):
         result = []
         timestamp = time.time()
         dc = len(self.design_media)
-        result.append(DataItem(timestamp=timestamp,
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
                                name='Design Media',
                                value=dc))
         ec = len(self.experiment_media)
-        result.append(DataItem(timestamp=timestamp,
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
                                name='Experiment Media',
                                value=ec))
         return result
 
 
-class ControlsMetric(DataMetric):
+class ControlsMetric(sd2.metric.DataMetric):
 
     def __init__(self, url):
         super().__init__(url)
@@ -236,17 +232,17 @@ class ControlsMetric(DataMetric):
         result = []
         timestamp = time.time()
         dc = len(self.design_controls)
-        result.append(DataItem(timestamp=timestamp,
-                               name='Design Controls',
-                               value=dc))
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                          name='Design Controls',
+                                          value=dc))
         ec = len(self.experiment_controls)
-        result.append(DataItem(timestamp=timestamp,
-                               name='Experiment Controls',
-                               value=ec))
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                          name='Experiment Controls',
+                                          value=ec))
         return result
 
 
-class PlansMetric(DataMetric):
+class PlansMetric(sd2.metric.DataMetric):
 
     def __init__(self, url):
         super().__init__(url)
@@ -263,9 +259,9 @@ class PlansMetric(DataMetric):
         result = []
         timestamp = time.time()
         ep = len(self.experiment_plans)
-        result.append(DataItem(timestamp=timestamp,
-                               name='Experiment Plans',
-                               value=ep))
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                          name='Experiment Plans',
+                                          value=ep))
         return result
 
 
@@ -350,6 +346,7 @@ def main(argv):
         print('No "metrics" section found in {} configuration')
         sys.exit(1)
 
+    metrics = []
     for option, value in config.items('metrics'):
         if config.has_section(value):
             msg = 'Loading {} from section {}'
@@ -357,11 +354,29 @@ def main(argv):
             class_name = config.get(value, 'class')
             msg = 'Loading {} from class {}'
             logging.info(msg.format(value, class_name))
-            demonstrate(class_name)
+            cls = load_metric(class_name)
+            # Add other options from config to constructor call,
+            # probably as a dictionary
+            metric = instantiate_metric(cls, url)
+            metrics.append(metric)
         else:
             msg = 'Loading {} from class {}'
             logging.info(msg.format(option, value))
-            demonstrate(value)
+            cls = load_metric(value)
+            # Add other options from config to constructor call,
+            # probably as a dictionary
+            metric = instantiate_metric(cls, url)
+            metrics.append(metric)
+    # results = [m.fetch() for m in metrics]
+    results = []
+    for m in metrics:
+        logging.info('Fetching for {}'.format(type(m).__name__))
+        results.append(m.fetch())
+    logging.debug('Results = {}'.format(results))
+    for result in results:
+        logging.debug('Result = {}'.format(result))
+        for r in result:
+            print('Metric {} = {}'.format(r.name, r.value))
 
 
 if __name__ == '__main__':

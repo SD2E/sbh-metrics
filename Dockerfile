@@ -15,3 +15,4 @@ RUN pip3 install \
 
 ADD testing.py /testing.py
 ADD testing.ini /testing.ini
+ADD sd2 /sd2
