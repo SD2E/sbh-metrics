@@ -30,12 +30,12 @@ class RiboswitchesMetric(sd2.metric.DataMetric):
         timestamp = time.time()
         dc = len(self.design_riboswitches)
         result.append(sd2.metric.DataItem(timestamp=timestamp,
-                               name='Design Riboswitches',
-                               value=dc))
+                                          name='Design Riboswitches',
+                                          value=dc))
         ec = len(self.experiment_riboswitches)
         result.append(sd2.metric.DataItem(timestamp=timestamp,
-                               name='Experiment Riboswitches',
-                               value=ec))
+                                          name='Experiment Riboswitches',
+                                          value=ec))
         return result
 
 
@@ -57,12 +57,12 @@ class PlasmidsMetric(sd2.metric.DataMetric):
         timestamp = time.time()
         dc = len(self.design_plasmids)
         result.append(sd2.metric.DataItem(timestamp=timestamp,
-                               name='Design Plasmids',
-                               value=dc))
+                                          name='Design Plasmids',
+                                          value=dc))
         ec = len(self.experiment_plasmids)
         result.append(sd2.metric.DataItem(timestamp=timestamp,
-                               name='Experiment Plasmids',
-                               value=ec))
+                                          name='Experiment Plasmids',
+                                          value=ec))
         return result
 
 
@@ -84,12 +84,12 @@ class GatesMetric(sd2.metric.DataMetric):
         timestamp = time.time()
         dc = len(self.design_gates)
         result.append(sd2.metric.DataItem(timestamp=timestamp,
-                               name='Design Gates',
-                               value=dc))
+                                          name='Design Gates',
+                                          value=dc))
         ec = len(self.experiment_gates)
         result.append(sd2.metric.DataItem(timestamp=timestamp,
-                               name='Experiment Gates',
-                               value=ec))
+                                          name='Experiment Gates',
+                                          value=ec))
         return result
 
 
@@ -111,12 +111,12 @@ class MediaMetric(sd2.metric.DataMetric):
         timestamp = time.time()
         dc = len(self.design_media)
         result.append(sd2.metric.DataItem(timestamp=timestamp,
-                               name='Design Media',
-                               value=dc))
+                                          name='Design Media',
+                                          value=dc))
         ec = len(self.experiment_media)
         result.append(sd2.metric.DataItem(timestamp=timestamp,
-                               name='Experiment Media',
-                               value=ec))
+                                          name='Experiment Media',
+                                          value=ec))
         return result
 
 
