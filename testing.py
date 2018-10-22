@@ -12,101 +12,6 @@ import synbiohub_adapter as sbha
 import sd2.metric
 
 
-class Statistics:
-
-    def __init__(self, url):
-        self._url = url
-        self._query = sbha.SynBioHubQuery(url)
-
-    @property
-    def design_riboswitches(self):
-        return self._query.query_design_riboswitches(pretty=True)
-
-    @property
-    def experiment_riboswitches(self):
-        return self._query.query_experiment_riboswitches(by_sample=False)
-
-    @property
-    def design_plasmids(self):
-        return self._query.query_design_plasmids(pretty=True)
-
-    @property
-    def experiment_plasmids(self):
-        return self._query.query_experiment_plasmids(by_sample=False)
-
-    @property
-    def design_gates(self):
-        return self._query.query_design_gates(pretty=True)
-
-    @property
-    def experiment_gates(self):
-        return self._query.query_experiment_gates(by_sample=False)
-
-    @property
-    def design_media(self):
-        return self._query.query_design_media(pretty=True)
-
-    @property
-    def experiment_media(self):
-        return self._query.query_experiment_media(by_sample=False)
-
-    @property
-    def design_controls(self):
-        return self._query.query_design_controls(pretty=True)
-
-    @property
-    def experiment_controls(self):
-        return self._query.query_experiment_controls(by_sample=False)
-
-    @property
-    def experiment_plans(self):
-        collections = [sbha.SD2Constants.SD2_EXPERIMENT_COLLECTION]
-        rdf_type = 'http://sd2e.org#Experiment'
-        plans = self._query.query_collection_members(collections=collections,
-                                                     rdf_type=rdf_type)
-        return self._query.format_query_result(plans, ['entity'])
-
-    def report(self):
-        design_riboswitches = self.design_riboswitches
-        exp_riboswitches = self.experiment_riboswitches
-        msg = '{:d} out of {:d} riboswitches'
-        print(msg.format(len(exp_riboswitches), len(design_riboswitches)))
-        design_plasmids = self.design_plasmids
-        exp_plasmids = self.experiment_plasmids
-        msg = '{:d} out of {:d} plasmids'
-        print(msg.format(len(exp_plasmids), len(design_plasmids)))
-        design_gates = self.design_gates
-        exp_gates = self.experiment_gates
-        msg = '{:d} out of {:d} gates'
-        print(msg.format(len(exp_gates), len(design_gates)))
-        design_media = self.design_media
-        exp_media = self.experiment_media
-        msg = '{:d} out of {:d} media'
-        print(msg.format(len(exp_media), len(design_media)))
-        design_controls = self.design_controls
-        exp_controls = self.experiment_controls
-        msg = '{:d} out of {:d} controls'
-        print(msg.format(len(exp_controls), len(design_controls)))
-        exp_plans = self.experiment_plans
-        msg = '{:d} experiment plans'
-        print(msg.format(len(exp_plans)))
-
-
-# class DataItem():
-
-#     def __init__(self, timestamp=0, name='', value=None):
-#         self.timestamp = timestamp
-#         self.name = name
-#         self.value = value
-
-
-# class DataMetric():
-
-#     def __init__(self, url):
-#         self._url = url
-#         self._query = sbha.SynBioHubQuery(url)
-
-
 class RiboswitchesMetric(sd2.metric.DataMetric):
 
     def __init__(self, url):
@@ -275,23 +180,6 @@ def collect_data(fetchers):
                              value=d.value))
 
 
-url = sbha.SD2Constants.SD2_SERVER
-fetchers = [
-    RiboswitchesMetric(url),
-    PlasmidsMetric(url),
-    GatesMetric(url),
-    MediaMetric(url),
-    ControlsMetric(url),
-    PlansMetric(url)
-]
-
-# collect_data(fetchers)
-
-# for i in range(2):
-#     collect_data(fetchers)
-#     time.sleep(60)
-
-
 def load_metric(class_name):
     module_name = class_name[:class_name.rindex('.')]
     module = importlib.import_module(module_name)
@@ -302,15 +190,6 @@ def load_metric(class_name):
 
 def instantiate_metric(metric_class, sbh_url):
     return metric_class(sbh_url)
-
-
-def demonstrate(class_name):
-    "A quick how to"
-    c = load_metric(class_name)
-    m = instantiate_metric(c, url)
-    r = m.fetch()
-    pr = [(d.name, d.value) for d in r]
-    print(pr)
 
 
 def parse_args(args):
@@ -341,6 +220,9 @@ def main(argv):
 
     config = configparser.ConfigParser()
     config.read_file(args.config)
+
+    # Push the SynBioHub URL out to the config file
+    url = sbha.SD2Constants.SD2_SERVER
 
     if not config.has_section('metrics'):
         print('No "metrics" section found in {} configuration')
