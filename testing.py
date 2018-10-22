@@ -251,8 +251,11 @@ def main(argv):
             metrics.append(metric)
     # results = [m.fetch() for m in metrics]
     results = []
+    writer = sd2.metric.api.DataMetricLogger()
     for m in metrics:
         logging.info('Fetching for {}'.format(type(m).__name__))
+        for item in m.fetch():
+            writer.write_data_item(m, item)
         results.append(m.fetch())
     logging.debug('Results = {}'.format(results))
     for result in results:
