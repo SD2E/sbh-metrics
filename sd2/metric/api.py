@@ -1,4 +1,6 @@
+import csv
 import logging
+import pathlib
 
 import synbiohub_adapter as sbha
 
@@ -38,6 +40,22 @@ class DataMetricLogger(DataMetricWriter):
         # super().__init__()
         self.logger = logger
 
-    def write_data_item(self, metric, item):
+    def write(self, metric, items):
         pretty_class = metric.__class__.__name__
-        self.logger.info(f'{pretty_class} {item.name}: {item.value}')
+        for item in items:
+            self.logger.info(f'{pretty_class} {item.name}: {item.value}')
+
+
+class DataMetricCsvWriter(DataMetricWriter):
+
+    def __init__(self, options):
+        # super().__init__()
+        self.out_dir = pathlib.Path('.')
+        if 'out_dir' in options:
+            self.out_dir = pathlib.Path(options['out_dir'])
+
+    def write(self, metric, items):
+        pretty_class = metric.__class__.__name__
+        csv_file = '{}.csv'.format(pretty_class)
+        csv_path = self.out_dir / csv_file
+        logging.info('CSV file name: {}'.format(str(csv_path)))

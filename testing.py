@@ -180,12 +180,42 @@ def collect_data(fetchers):
                              value=d.value))
 
 
-def load_metric(class_name):
+def load_class(class_name):
     module_name = class_name[:class_name.rindex('.')]
     module = importlib.import_module(module_name)
     class_name = class_name[class_name.rindex('.') + 1:]
     cls = getattr(module, class_name)
     return cls
+
+
+def instantiate_writer(metric_class, options=None):
+    if options:
+        return metric_class(options)
+    else:
+        return metric_class()
+
+
+def load_writers(config, writers_section='writers'):
+    result = []
+    for option, value in config.items(writers_section):
+        if config.has_section(value):
+            msg = 'Loading {} from section {}'
+            logging.info(msg.format(option, value))
+            class_name = config.get(value, 'class')
+            msg = 'Loading {} from class {}'
+            logging.info(msg.format(value, class_name))
+            cls = load_class(class_name)
+            # Add other options from config to constructor call
+            options = dict(config.items(value))
+            instance = instantiate_writer(cls, options)
+            result.append(instance)
+        else:
+            msg = 'Loading {} from class {}'
+            logging.info(msg.format(option, value))
+            cls = load_class(value)
+            instance = instantiate_writer(cls)
+            result.append(instance)
+    return result
 
 
 def instantiate_metric(metric_class, sbh_url):
@@ -236,7 +266,7 @@ def main(argv):
             class_name = config.get(value, 'class')
             msg = 'Loading {} from class {}'
             logging.info(msg.format(value, class_name))
-            cls = load_metric(class_name)
+            cls = load_class(class_name)
             # Add other options from config to constructor call,
             # probably as a dictionary
             metric = instantiate_metric(cls, url)
@@ -244,19 +274,22 @@ def main(argv):
         else:
             msg = 'Loading {} from class {}'
             logging.info(msg.format(option, value))
-            cls = load_metric(value)
+            cls = load_class(value)
             # Add other options from config to constructor call,
             # probably as a dictionary
             metric = instantiate_metric(cls, url)
             metrics.append(metric)
     # results = [m.fetch() for m in metrics]
     results = []
-    writer = sd2.metric.api.DataMetricLogger()
+    writers = load_writers(config)
+    # writer = sd2.metric.api.DataMetricLogger()
+    # csv_writer = sd2.metric.api.DataMetricCsvWriter()
     for m in metrics:
         logging.info('Fetching for {}'.format(type(m).__name__))
-        for item in m.fetch():
-            writer.write_data_item(m, item)
-        results.append(m.fetch())
+        items = m.fetch()
+        for writer in writers:
+            writer.write(m, items)
+        results.append(items)
     logging.debug('Results = {}'.format(results))
     for result in results:
         logging.debug('Result = {}'.format(result))
