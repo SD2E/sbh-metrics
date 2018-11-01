@@ -54,8 +54,22 @@ class DataMetricCsvWriter(DataMetricWriter):
         if 'out_dir' in options:
             self.out_dir = pathlib.Path(options['out_dir'])
 
+    def _initialize_dir(self, dir_path):
+        dir_path.mkdir(parents=True, exist_ok=True)
+
+    def _initialize_file(self, path):
+        if not path.exists():
+            path.touch()
+        # We may want to initialize the CSV header here as well
+
     def write(self, metric, items):
+        self._initialize_dir(self.out_dir)
         pretty_class = metric.__class__.__name__
         csv_file = '{}.csv'.format(pretty_class)
         csv_path = self.out_dir / csv_file
         logging.info('CSV file name: {}'.format(str(csv_path)))
+        self._initialize_file(csv_path)
+        rows = [[int(i.timestamp), i.name, i.value] for i in items]
+        with csv_path.open('a') as fp:
+            writer = csv.writer(fp)
+            writer.writerows(rows)
