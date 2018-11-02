@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+import argparse
+import csv
+import datetime
+import logging
+import sys
+
+import matplotlib
+#import numpy as np
+
+matplotlib.use('AGG')
+try:
+    import matplotlib.pyplot as plt
+except Exception as e:
+    raise e
+
+
+class MetricData:
+
+    def __init__(self, name):
+        self.name = name
+        self.x_data = []
+        self.y_data = []
+
+    def add_data_point(self, x, y):
+        self.x_data.append(x)
+        self.y_data.append(y)
+
+
+def parse_args(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("csv", type=argparse.FileType('r'),
+                        metavar="CSV_FILE")
+    parser.add_argument('-d', '--debug', action='store_true')
+    args = parser.parse_args()
+    return args
+
+
+def init_logging(debug=False):
+    msgFormat = '%(asctime)s %(levelname)s %(message)s'
+    dateFormat = '%m/%d/%Y %H:%M:%S'
+    level = logging.INFO
+    if debug:
+        level = logging.DEBUG
+    logging.basicConfig(format=msgFormat, datefmt=dateFormat, level=level)
+
+
+def main(argv):
+    if not argv:
+        argv = sys.argv
+    args = parse_args(argv)
+
+    # Init logging
+    init_logging(args.debug)
+
+    metrics = {}
+    csv_reader = csv.reader(args.csv)
+    for row in csv_reader:
+        ts = int(row[0])
+        # convert epoch timestamp to datetime
+        ts = datetime.datetime.fromtimestamp(ts)
+        name = row[1]
+        value = int(row[2])
+        if name not in metrics:
+            metrics[name] = MetricData(name)
+        metric = metrics[name]
+        metric.add_data_point(ts, value)
+
+    colors = ['blue', 'red', 'green', 'cyan', 'magenta']
+    color_idx = 0
+    for metric in metrics.values():
+        plt.plot(metric.x_data, metric.y_data, label=metric.name,
+                 marker='d', linewidth=1, color=colors[color_idx])
+        color_idx += 1
+    plt.legend()
+    plt.gcf().autofmt_xdate()
+    plt.savefig('metric.png')
+    plt.close()
+
+
+if __name__ == '__main__':
+    main(sys.argv)
