@@ -170,6 +170,78 @@ class PlansMetric(sd2.metric.DataMetric):
         return result
 
 
+class TriplesMetric(sd2.metric.DataMetric):
+
+    def __init__(self, url):
+        super().__init__(url)
+
+    @property
+    def triples(self):
+        sparql_query = 'SELECT (COUNT(?s) AS ?triples) WHERE { ?s ?p ?o }'
+        result = self._query.fetch_SPARQL(self._query._server,
+                                          sparql_query)
+        return self._query.format_query_result(result, ['triples'])
+
+    def fetch(self):
+        result = []
+        timestamp = time.time()
+        val = int(self.triples[0])
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                          name='Triples',
+                                          value=val))
+        return result
+
+
+class PredicatesMetric(sd2.metric.DataMetric):
+
+    def __init__(self, url):
+        super().__init__(url)
+
+    @property
+    def predicates(self):
+        sparql_query = '''SELECT ?p (COUNT(?p) as ?pCount)
+          WHERE { ?s ?p ?o . }
+          GROUP BY ?p
+        '''
+        result = self._query.fetch_SPARQL(self._query._server,
+                                          sparql_query)
+        return self._query.format_query_result(result, ['p', 'pCount'])
+
+    def fetch(self):
+        result = []
+        timestamp = time.time()
+        val = len(self.predicates)
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                          name='Predicates',
+                                          value=val))
+        return result
+
+
+class RelationsMetric(sd2.metric.DataMetric):
+
+    def __init__(self, url):
+        super().__init__(url)
+
+    @property
+    def predicates(self):
+        sparql_query = '''SELECT ?o (COUNT(?o) as ?oCount)
+          WHERE { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o . }
+          GROUP BY ?o
+        '''
+        result = self._query.fetch_SPARQL(self._query._server,
+                                          sparql_query)
+        return self._query.format_query_result(result, ['o', 'oCount'])
+
+    def fetch(self):
+        result = []
+        timestamp = time.time()
+        for o in self.predicates:
+            result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                              name=o['o'],
+                                              value=int(o['oCount'])))
+        return result
+
+
 def collect_data(fetchers):
     fmt = '{ts},{name},{value}'
     for f in fetchers:
@@ -294,7 +366,7 @@ def main(argv):
     for result in results:
         logging.debug('Result = {}'.format(result))
         for r in result:
-            print('Metric {} = {}'.format(r.name, r.value))
+            logging.debug('Metric {} = {}'.format(r.name, r.value))
 
 
 if __name__ == '__main__':
