@@ -291,55 +291,41 @@ class StubsMetric(sd2.metric.DataMetric):
         result = self._query.format_query_result(result, ['type', 'typeCount'])
         return [(row['type'], int(row['typeCount'])) for row in result]
 
-    @property
-    def stubs(self):
-        sparql_query = '''SELECT ?s, ?p, ?o
-          WHERE {
-              ?s <http://sd2e.org#stub_object> "true" .
-              ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sbols.org/v2#ComponentDefinition> .
-              ?s ?p ?o
-          }
-          GROUP BY ?type
-        '''
-        result = self._query.fetch_SPARQL(self._query._server,
-                                          sparql_query)
-        logging.debug('raw result: {}'.format(result))
-        stubs = self._query.format_query_result(result, ['s', 'p', 'o'])
-        sstubs = [(stub['s'], stub['p'], stub['o']) for stub in stubs]
-        # sstubs.sort(key=lambda x: x[0])
-        sstubs.sort()
-        for stub in sstubs:
-            logging.info('{}'.format(stub))
-        return stubs
+    # @property
+    # def stubs(self):
+    #     sparql_query = '''SELECT ?s, ?p, ?o
+    #       WHERE {
+    #           ?s <http://sd2e.org#stub_object> "true" .
+    #           ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sbols.org/v2#ComponentDefinition> .
+    #           ?s ?p ?o
+    #       }
+    #       GROUP BY ?type
+    #     '''
+    #     result = self._query.fetch_SPARQL(self._query._server,
+    #                                       sparql_query)
+    #     logging.debug('raw result: {}'.format(result))
+    #     stubs = self._query.format_query_result(result, ['s', 'p', 'o'])
+    #     sstubs = [(stub['s'], stub['p'], stub['o']) for stub in stubs]
+    #     # sstubs.sort(key=lambda x: x[0])
+    #     sstubs.sort()
+    #     for stub in sstubs:
+    #         logging.info('{}'.format(stub))
+    #     return stubs
 
-    @property
-    def stubs_good(self):
-        sparql_query = '''SELECT ?type, (COUNT(?type) as ?typeCount)
-          WHERE {
-              ?s <http://sd2e.org#stub_object> "true" .
-              ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type
-          }
-          GROUP BY ?type
-        '''
-        result = self._query.fetch_SPARQL(self._query._server,
-                                          sparql_query)
-        logging.info('raw result: {}'.format(result))
-        stubs = self._query.format_query_result(result, ['type', 'typeCount'])
-        return stubs
-
-    @property
-    def nonstubs(self):
-        sparql_query = '''SELECT ?type, (COUNT(?type) as ?typeCount)
-          WHERE {
-              ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type .
-              MINUS { ?s <http://sd2e.org#stub_object> "true" }
-          }
-          GROUP BY ?type
-        '''
-        result = self._query.fetch_SPARQL(self._query._server,
-                                          sparql_query)
-        stubs = self._query.format_query_result(result, ['type', 'typeCount'])
-        return stubs
+    # @property
+    # def stubs_good(self):
+    #     sparql_query = '''SELECT ?type, (COUNT(?type) as ?typeCount)
+    #       WHERE {
+    #           ?s <http://sd2e.org#stub_object> "true" .
+    #           ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type
+    #       }
+    #       GROUP BY ?type
+    #     '''
+    #     result = self._query.fetch_SPARQL(self._query._server,
+    #                                       sparql_query)
+    #     logging.info('raw result: {}'.format(result))
+    #     stubs = self._query.format_query_result(result, ['type', 'typeCount'])
+    #     return stubs
 
     def fetch(self):
         result = []
@@ -349,21 +335,11 @@ class StubsMetric(sd2.metric.DataMetric):
             result.append(sd2.metric.DataItem(timestamp=timestamp,
                                               name=role,
                                               value=role_count))
-
         component_stub_counts = self.stub_components
         for (name, count) in component_stub_counts:
             result.append(sd2.metric.DataItem(timestamp=timestamp,
                                               name=name,
                                               value=count))
-        # for stub in self.stubs:
-        #     logging.info('Stub {}'.format(stub))
-        #     result.append(sd2.metric.DataItem(timestamp=timestamp,
-        #                                       name=stub['type'],
-        #                                       value=stub['typeCount']))
-        # for nonstub in self.nonstubs:
-        #     result.append(sd2.metric.DataItem(timestamp=timestamp,
-        #                                       name='Nonstub {}'.format(nonstub['type']),
-        #                                       value=nonstub['typeCount']))
         return result
 
 
