@@ -462,12 +462,6 @@ def main(argv):
         items = m.fetch()
         for writer in writers:
             writer.write(m, items)
-        results.append(items)
-    # logging.debug('Results = {}'.format(results))
-    for result in results:
-        # logging.debug('Result = {}'.format(result))
-        for r in result:
-            logging.debug('Metric {} = {}'.format(r.name, r.value))
 
 
 if __name__ == '__main__':
