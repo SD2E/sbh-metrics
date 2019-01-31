@@ -427,6 +427,9 @@ def main(argv):
     # Push the SynBioHub URL out to the config file
     url = sbha.SD2Constants.SD2_SERVER
 
+    # Temporary fix during flux about authentication
+    url = 'http://hub-api.sd2e.org:80/sparql'
+
     if not config.has_section('metrics'):
         print('No "metrics" section found in {} configuration')
         sys.exit(1)
