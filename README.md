@@ -34,17 +34,6 @@ You should see results like this:
 .
 .
 .
-Metric Design Riboswitches = 193
-Metric Experiment Riboswitches = 0
-Metric Design Plasmids = 30
-Metric Experiment Plasmids = 28
-Metric Design Gates = 48
-Metric Experiment Gates = 48
-Metric Design Media = 37
-Metric Experiment Media = 9
-Metric Design Controls = 20
-Metric Experiment Controls = 18
-Metric Experiment Plans = 55
 ```
 
 
@@ -57,13 +46,13 @@ Metrics softwared included.
 To build a docker image in this directory:
 
 ```
-docker build --tag sbh_adapter:bionic .
+docker build --tag sd2e/sbh-metrics:0.1-beta.1 .
 ```
 
 To run the resulting image interactively:
 
 ```
-docker run -it --rm sbh_adapter:bionic
+docker run -it --rm sd2e/sbh-metrics:0.1-beta.1
 ```
 
 An example run from within the docker image:
@@ -103,15 +92,4 @@ root@e60eecff88b1:/# python3 /testing.py /testing.ini
 11/06/2018 15:12:53 INFO Fetching for PlansMetric
 11/06/2018 15:12:54 INFO CSV file name: /tmp/test_csv_writer/PlansMetric.csv
 11/06/2018 15:12:54 INFO PlansMetric Experiment Plans: 55
-Metric Design Riboswitches = 193
-Metric Experiment Riboswitches = 0
-Metric Design Plasmids = 30
-Metric Experiment Plasmids = 28
-Metric Design Gates = 48
-Metric Experiment Gates = 48
-Metric Design Media = 37
-Metric Experiment Media = 9
-Metric Design Controls = 20
-Metric Experiment Controls = 18
-Metric Experiment Plans = 55
 ```

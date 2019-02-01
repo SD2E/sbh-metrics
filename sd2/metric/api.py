@@ -12,6 +12,12 @@ class DataItem():
         self.name = name
         self.value = value
 
+    def __iter__(self):
+        # Nothing fancy, just yield the fields in order
+        yield int(self.timestamp)
+        yield self.name
+        yield self.value
+
 
 class DataMetric():
 
@@ -69,7 +75,6 @@ class DataMetricCsvWriter(DataMetricWriter):
         csv_path = self.out_dir / csv_file
         logging.info('CSV file name: {}'.format(str(csv_path)))
         self._initialize_file(csv_path)
-        rows = [[int(i.timestamp), i.name, i.value] for i in items]
         with csv_path.open('a') as fp:
             writer = csv.writer(fp)
-            writer.writerows(rows)
+            writer.writerows(items)

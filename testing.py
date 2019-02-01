@@ -427,6 +427,9 @@ def main(argv):
     # Push the SynBioHub URL out to the config file
     url = sbha.SD2Constants.SD2_SERVER
 
+    # Temporary fix during flux about authentication
+    url = 'http://hub-api.sd2e.org:80/sparql'
+
     if not config.has_section('metrics'):
         print('No "metrics" section found in {} configuration')
         sys.exit(1)
@@ -462,12 +465,6 @@ def main(argv):
         items = m.fetch()
         for writer in writers:
             writer.write(m, items)
-        results.append(items)
-    # logging.debug('Results = {}'.format(results))
-    for result in results:
-        # logging.debug('Result = {}'.format(result))
-        for r in result:
-            logging.debug('Metric {} = {}'.format(r.name, r.value))
 
 
 if __name__ == '__main__':
