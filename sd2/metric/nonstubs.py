@@ -5,6 +5,7 @@ import time
 
 from .api import DataMetric
 
+
 class NonStubsMetric(DataMetric):
 
     def __init__(self, url):
