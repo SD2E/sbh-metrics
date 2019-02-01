@@ -14,5 +14,4 @@ RUN pip3 install \
       git+https://github.com/SD2E/synbiohub_adapter.git
 
 ADD testing.py /testing.py
-ADD testing.ini /testing.ini
 ADD sd2 /sd2
