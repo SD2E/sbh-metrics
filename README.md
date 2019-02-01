@@ -93,3 +93,19 @@ root@e60eecff88b1:/# python3 /testing.py /testing.ini
 11/06/2018 15:12:54 INFO CSV file name: /tmp/test_csv_writer/PlansMetric.csv
 11/06/2018 15:12:54 INFO PlansMetric Experiment Plans: 55
 ```
+
+# Running from cron
+
+To run the image via a cron job, create an entry like this:
+
+```
+# m h  dom mon dow   command
+0 1 * * * docker run --rm -v /path/to/output/dir:/sd2metrics -v /path/to/config.ini:config.ini sd2e/sbh-metrics:0.1-beta.2 python3 /testing.py /config.ini > /path/to/log-file.log 2>&1
+```
+
+# Configuration in Docker
+
+The configuration file can contain the SynBioHub password. In order to
+safely communicate that information to the docker image, mount the
+file when runnning docker. See the cron example for how to mount a
+file when running a docker image.

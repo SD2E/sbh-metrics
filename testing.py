@@ -11,6 +11,11 @@ import synbiohub_adapter as sbha
 
 import sd2.metric
 
+S_SYNBIOHUB = 'synbiohub'
+O_URL = 'url'
+O_USER = 'user'
+O_PASSWORD = 'password'
+
 
 class RiboswitchesMetric(sd2.metric.DataMetric):
 
@@ -258,7 +263,7 @@ class StubsMetric(sd2.metric.DataMetric):
         [(role1, count1), (role2, count2) ... ]
 
         """
-        sparql_query = '''SELECT ?role, (COUNT(?role) as ?roleCount)
+        sparql_query = '''SELECT ?role (COUNT(?role) as ?roleCount)
           WHERE {
               ?s <http://sd2e.org#stub_object> "true" .
               ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sbols.org/v2#ModuleDefinition> .
@@ -278,7 +283,7 @@ class StubsMetric(sd2.metric.DataMetric):
         [(type1, count1), (type2, count2) ... ]
 
         """
-        sparql_query = '''SELECT ?type, (COUNT(?type) as ?typeCount)
+        sparql_query = '''SELECT ?type (COUNT(?type) as ?typeCount)
           WHERE {
               ?s <http://sd2e.org#stub_object> "true" .
               ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sbols.org/v2#ComponentDefinition> .
@@ -391,8 +396,11 @@ def load_writers(config, writers_section='writers'):
     return result
 
 
-def instantiate_metric(metric_class, sbh_url):
-    return metric_class(sbh_url)
+def instantiate_metric(metric_class, sbh_url, sbh_user=None, sbh_password=None):
+    instance = metric_class(sbh_url)
+    if sbh_user and sbh_password:
+        instance.login(sbh_user, sbh_password)
+    return instance
 
 
 def parse_args(args):
@@ -424,15 +432,13 @@ def main(argv):
     config = configparser.ConfigParser()
     config.read_file(args.config)
 
-    # Push the SynBioHub URL out to the config file
-    url = sbha.SD2Constants.SD2_SERVER
-
-    # Temporary fix during flux about authentication
-    url = 'http://hub-api.sd2e.org:80/sparql'
-
     if not config.has_section('metrics'):
         print('No "metrics" section found in {} configuration')
         sys.exit(1)
+
+    sbh_url = config.get(S_SYNBIOHUB, O_URL, fallback=sbha.SD2Constants.SD2_SERVER)
+    sbh_user = config.get(S_SYNBIOHUB, O_USER, fallback=None)
+    sbh_password = config.get(S_SYNBIOHUB, O_PASSWORD, fallback=None)
 
     metrics = []
     for option, value in config.items('metrics'):
@@ -445,7 +451,7 @@ def main(argv):
             cls = load_class(class_name)
             # Add other options from config to constructor call,
             # probably as a dictionary
-            metric = instantiate_metric(cls, url)
+            metric = instantiate_metric(cls, sbh_url, sbh_user, sbh_password)
             metrics.append(metric)
         else:
             msg = 'Loading {} from class {}'
@@ -453,7 +459,7 @@ def main(argv):
             cls = load_class(value)
             # Add other options from config to constructor call,
             # probably as a dictionary
-            metric = instantiate_metric(cls, url)
+            metric = instantiate_metric(cls, sbh_url, sbh_user, sbh_password)
             metrics.append(metric)
     # results = [m.fetch() for m in metrics]
     results = []
