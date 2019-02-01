@@ -25,6 +25,12 @@ class DataMetric():
         self._url = url
         self._query = sbha.SynBioHubQuery(url)
 
+    def login(self, user, password):
+        """Authenticate the connection to SynBioHub.
+        This must be done prior to running any queries.
+        """
+        self._query.login(user, password)
+
 
 class DataMetricWriter:
 

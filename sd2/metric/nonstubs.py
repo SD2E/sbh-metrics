@@ -13,7 +13,7 @@ class NonStubsMetric(DataMetric):
     @property
     def nonstub_modules(self):
         # Could stubs be marked with #stub_object = "false"? If so, adjust the filter
-        sparql_query = '''SELECT ?s, ?role
+        sparql_query = '''SELECT ?s ?role
           WHERE {
               ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sbols.org/v2#ModuleDefinition> .
               ?s <http://sbols.org/v2#role> ?role
@@ -64,7 +64,9 @@ class NonStubsMetric(DataMetric):
                 filled_by_type[sd2_type] += 1
 
         # Add the CSV header
-        result.append(['Timestamp', 'URI', 'All', 'Filled', 'Empty'])
+        # Don't write the header each time, it ends up as a row in the
+        # middle when appending to the file.
+        # result.append(['Timestamp', 'URI', 'All', 'Filled', 'Empty'])
         for sd2_type, count in count_by_type.items():
             filled = filled_by_type[sd2_type]
             empty = count - filled
