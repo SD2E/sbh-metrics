@@ -6,21 +6,10 @@ import time
 from .api import DataMetric
 
 
-class ComponentDefinition:
-
-    KEY_STUB = 'stub'
-    KEY_SEQUENCE = 'sequence'
-    KEY_COMPONENT = 'component'
-    KEY_SEQUENCE_ANNOTATION = 'sequenceAnnotation'
-
-
-class ModuleDefinition:
+class BaseDefinition:
 
     KEY_STUB = 'stub'
     KEY_SUBTYPE = 'subtype'
-    KEY_FUNCTIONAL_COMPONENT = 'functionalComponent'
-    KEY_INTERACTION = 'interaction'
-    KEY_MODULE = 'module'
 
     def __init__(self, db_values):
         # Should probably validate the values a bit
@@ -28,19 +17,48 @@ class ModuleDefinition:
 
     @property
     def subtype(self):
-        return self._db_values[ModuleDefinition.KEY_SUBTYPE]
+        return self._db_values[BaseDefinition.KEY_SUBTYPE]
 
     def is_stub(self):
         return (ModuleDefinition.KEY_STUB in self._db_values and
-                self._db_values[ModuleDefinition.KEY_STUB] == 'true')
+                self._db_values[BaseDefinition.KEY_STUB] == 'true')
+
+    def is_filled(self):
+        # This must be defined in derived classes
+        raise NotImplementedError
+
+    def is_empty(self):
+        return not self.is_filled()
+
+
+class ComponentDefinition(BaseDefinition):
+
+    KEY_SEQUENCE = 'sequence'
+    KEY_COMPONENT = 'component'
+    KEY_SEQUENCE_ANNOTATION = 'sequenceAnnotation'
+
+    def __init__(self, db_values):
+        super().__init__(db_values)
+
+    def is_filled(self):
+        return (ComponentDefinition.KEY_COMPONENT in self._db_values or
+                ComponentDefinition.KEY_SEQUENCE in self._db_values or
+                ComponentDefinition.KEY_SEQUENCE_ANNOTATION in self._db_values)
+
+
+class ModuleDefinition(BaseDefinition):
+
+    KEY_FUNCTIONAL_COMPONENT = 'functionalComponent'
+    KEY_INTERACTION = 'interaction'
+    KEY_MODULE = 'module'
+
+    def __init__(self, db_values):
+        super().__init__(db_values)
 
     def is_filled(self):
         return (ModuleDefinition.KEY_FUNCTIONAL_COMPONENT in self._db_values or
                 ModuleDefinition.KEY_INTERACTION in self._db_values or
                 ModuleDefinition.KEY_MODULE in self._db_values)
-
-    def is_empty(self):
-        return not self.is_filled()
 
 
 class SubTypeCounter:
@@ -99,6 +117,27 @@ class NonStubsMetric(DataMetric):
         result = [ModuleDefinition(dbv) for dbv in result]
         return result
 
+    def get_components(self):
+        sparql_query = '''SELECT ?type ?subtype ?stub ?sequence ?component
+                                 ?sequenceAnnotation
+          WHERE {
+              ?type <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://sbols.org/v2#ComponentDefinition> .
+              ?type <http://sbols.org/v2#type> ?subtype .
+              OPTIONAL { ?type <http://sd2e.org#stub_object> ?stub }
+              OPTIONAL { ?type <http://sbols.org/v2#sequence> ?sequence }
+              OPTIONAL { ?type <http://sbols.org/v2#component> ?component }
+              OPTIONAL { ?type <http://sbols.org/v2#sequenceAnnotation> ?sequenceAnnotation }
+          }
+        '''
+        result = self._query.fetch_SPARQL(self._query._server,
+                                          sparql_query)
+        result = self._query.format_query_result(result,
+                                                 ['type', 'subtype', 'stub',
+                                                  'sequence', 'component',
+                                                  'sequenceAnnotation'])
+        result = [ComponentDefinition(dbv) for dbv in result]
+        return result
+
     @property
     def nonstub_modules(self):
         # Could stubs be marked with #stub_object = "false"? If so, adjust the filter
@@ -142,11 +181,12 @@ class NonStubsMetric(DataMetric):
 
     def fetch(self):
         modules = self.get_modules()
-
+        components = self.get_components()
         rows = collections.defaultdict(SubTypeCounter)
         for m in modules:
             rows[m.subtype].add_component(m)
-
+        for c in components:
+            rows[c.subtype].add_component(c)
         for st in sorted(rows.keys()):
             row = rows[st]
             logging.info('%s, %s, %s, %s, %s, %s, %s',
