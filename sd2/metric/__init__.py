@@ -1,7 +1,7 @@
 __all__ = [
     'DataItem', 'DataMetric',
-    'NonStubsMetric',
+    'StubsMetric',
 ]
 
 from .api import DataItem, DataMetric
-from .nonstubs import NonStubsMetric
+from .stubs import StubsMetric

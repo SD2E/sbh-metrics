@@ -89,7 +89,7 @@ class SubTypeCounter:
                 self.empty_nonstubs += 1
 
 
-class NonStubsMetric(DataMetric):
+class StubsMetric(DataMetric):
 
     def __init__(self, url):
         super().__init__(url)
@@ -113,7 +113,6 @@ class NonStubsMetric(DataMetric):
                                                  ['type', 'subtype', 'stub',
                                                   'module', 'interaction',
                                                   'functionalComponent'])
-        logging.info('result type is %s', type(result))
         result = [ModuleDefinition(dbv) for dbv in result]
         return result
 
