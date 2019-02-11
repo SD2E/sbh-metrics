@@ -13,5 +13,8 @@ RUN pip3 install \
       --process-dependency-link \
       git+https://github.com/SD2E/synbiohub_adapter.git
 
-ADD testing.py /testing.py
+ADD sbh-metrics.py /sbh-metrics.py
 ADD sd2 /sd2
+
+ENTRYPOINT ["python3", "/sbh-metrics.py"]
+CMD ["--help"]
