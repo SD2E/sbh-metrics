@@ -46,13 +46,13 @@ Metrics softwared included.
 To build a docker image in this directory:
 
 ```
-docker build --tag sd2e/sbh-metrics:0.1-beta.1 .
+docker build --tag sd2e/sbh-metrics:0.2 .
 ```
 
 To run the resulting image interactively:
 
 ```
-docker run -it --rm sd2e/sbh-metrics:0.1-beta.1
+docker run -it --rm --entrypoint /bin/bash sd2e/sbh-metrics:0.2
 ```
 
 An example run from within the docker image:
@@ -100,7 +100,7 @@ To run the image via a cron job, create an entry like this:
 
 ```
 # m h  dom mon dow   command
-0 1 * * * docker run --rm -v /path/to/output/dir:/sd2metrics -v /path/to/config.ini:config.ini sd2e/sbh-metrics:0.1-beta.2 python3 /testing.py /config.ini > /path/to/log-file.log 2>&1
+0 1 * * * docker run --rm -v /path/to/output/dir:/sd2metrics -v /path/to/config.ini:/config.ini sd2e/sbh-metrics:0.2 /config.ini > /path/to/log-file.log 2>&1
 ```
 
 # Configuration in Docker
