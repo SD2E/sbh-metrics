@@ -1,4 +1,7 @@
 ---
+sbh:
+  user: ~
+  password: ~
 logs:
   level: DEBUG
   token: ~
