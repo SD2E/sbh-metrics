@@ -10,7 +10,7 @@ docker build --tag tcmitchell/sbh-metrics-reactor:0.1
 # Test Locally
 
 ```
-abaco deploy -R && scripts/run_container_message.sh local-message-01.json
+abaco deploy -R && scripts/run_container_message.sh message.sample.json
 ```
 
 
@@ -30,6 +30,6 @@ abaco deploy
 # Invoke reactor
 
 ```
-export MESSAGE='{ "myVar":"value1" }'
+export MESSAGE=$(cat message.sample.json)
 abaco submit -m "${MESSAGE}" z06e3lB5eGjbk
 ```
