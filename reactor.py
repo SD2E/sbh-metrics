@@ -23,7 +23,7 @@ def main():
     r.logger.info('SynBioHub user: %s', sbh_user)
     r.logger.info('SynBioHub password is available')
 
-    sbhm_args = ['/reactor.ini']
+    sbhm_args = ['-u', sbh_user, '-p', sbh_password, '/reactor.ini']
     r.logger.info('Invoking sbh metrics with %r', sbhm_args)
     sbhmetrics.main(sbhm_args)
 
