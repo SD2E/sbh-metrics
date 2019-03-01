@@ -307,7 +307,7 @@ def parse_args(args):
     parser.add_argument("config", type=argparse.FileType('r'),
                         metavar="CONFIG_FILE")
     parser.add_argument('-d', '--debug', action='store_true')
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     return args
 
 
