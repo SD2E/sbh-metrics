@@ -26,10 +26,21 @@ docker login
 abaco deploy
 ```
 
+At the end of the deploy, the actor id is displayed.
+
 
 # Invoke reactor
 
 ```
 export MESSAGE=$(cat message.sample.json)
-abaco submit -m "${MESSAGE}" z06e3lB5eGjbk
+abaco submit -m "${MESSAGE}" ACTOR_ID
+```
+
+After the submit an execution id is displayed.
+
+
+# View logs after run
+
+```
+abaco logs ACTOR_ID EXECUTION_ID
 ```
