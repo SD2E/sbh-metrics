@@ -44,3 +44,20 @@ After the submit an execution id is displayed.
 ```
 abaco logs ACTOR_ID EXECUTION_ID
 ```
+
+
+# Agave Basics
+
+```
+# List the user area (substitute your name for "user")
+files-list -S data-tacc-work-user
+
+# Make a directory
+files-mkdir -S data-tacc-work-tmitchel -N sd2metrics
+
+# List the new directory
+files-list -S data-tacc-work-tmitchel sd2metrics
+
+# Upload a file to the new directory
+files-upload -S data-tacc-work-tmitchel -F ../data/TriplesMetric.csv sd2metrics
+```
