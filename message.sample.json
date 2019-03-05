@@ -1,1 +1,3 @@
-{ "myVar":"value1" }
+{
+    "uri": "agave://data-tacc-work-tmitchel/sd2metrics/"
+}

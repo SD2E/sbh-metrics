@@ -5,3 +5,7 @@ sbh:
 logs:
   level: DEBUG
   token: ~
+
+# The config file to pass to the metrics gatherer
+metrics:
+  config: /reactor.ini
