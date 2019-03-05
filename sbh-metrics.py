@@ -295,7 +295,8 @@ def load_writers(config, writers_section='writers'):
     return result
 
 
-def instantiate_metric(metric_class, sbh_url, sbh_user=None, sbh_password=None):
+def instantiate_metric(metric_class, sbh_url, sbh_user=None,
+                       sbh_password=None):
     instance = metric_class(sbh_url)
     if sbh_user and sbh_password:
         instance.login(sbh_user, sbh_password)
@@ -335,7 +336,8 @@ def main(argv=None):
         print('No "metrics" section found in {} configuration')
         sys.exit(1)
 
-    sbh_url = config.get(S_SYNBIOHUB, O_URL, fallback=sbha.SD2Constants.SD2_SERVER)
+    sbh_url = config.get(S_SYNBIOHUB, O_URL,
+                         fallback=sbha.SD2Constants.SD2_SERVER)
     sbh_user = args.sbh_user
     if not sbh_user:
         sbh_user = config.get(S_SYNBIOHUB, O_USER, fallback=None)
