@@ -39,6 +39,24 @@ abaco submit -m "${MESSAGE}" ACTOR_ID
 After the submit an execution id is displayed.
 
 
+# List reactors
+
+```
+abaco ls
+```
+
+# Delete a reactor
+
+```
+abaco rm ACTOR_ID
+```
+
+# Get execution info
+
+```
+abaco executions -v ACTOR_ID
+```
+
 # View logs after run
 
 ```
