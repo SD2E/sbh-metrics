@@ -13,6 +13,9 @@ RUN pip3 install \
       --process-dependency-link \
       git+https://github.com/SD2E/synbiohub_adapter.git
 
+# Use TACC's bacanora for robust upload and download
+RUN pip3 install git+https://github.com/SD2E/bacanora.git
+
 ADD sbh-metrics.py /sbh-metrics.py
 ADD sd2 /sd2
 ADD reactor.ini /reactor.ini
