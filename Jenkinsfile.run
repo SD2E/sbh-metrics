@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Message the Reactor') {
             steps {
-                sh "abaco run -m '{\"uri\": \"agave://data-tacc-work-tmitchel/sd2metrics/\"}' ${ACTOR_ID}"
+                sh "abaco run -m '{\"uri\": \"agave://data-tacc-work-tmitchel/sd2metrics/\"}' -V ${ACTOR_ID}"
             }
         }
     }
