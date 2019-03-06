@@ -1,0 +1,36 @@
+#!groovy
+
+pipeline {
+    agent any
+    environment {
+        AGAVE_CACHE_DIR   = "${HOME}/credentials_cache/${JOB_BASE_NAME}"
+        AGAVE_JSON_PARSER = "jq"
+        AGAVE_TENANTID    = "sd2e"
+        AGAVE_APISERVER   = "https://api.sd2e.org"
+        AGAVE_USERNAME    = credentials('sd2emon-tacc-username')
+        AGAVE_PASSWORD    = credentials('sd2emon-tacc-password')
+        PATH = "${HOME}/bin:${HOME}/sd2e-cloud-cli/bin:${env.PATH}"
+        ACTOR_ID = 'ojrNbYYK31BDD'
+        }
+    stages {
+
+        stage('Create Oauth client') {
+            steps {
+                sh "get-job-client ${JOB_BASE_NAME} ${BUILD_ID}"
+            }
+        }
+        stage('Message the Reactor') {
+            steps {
+                sh "abaco run -m '{\"uri\": \"agave://data-tacc-work-tmitchel/sd2metrics/\"}' ${ACTOR_ID}"
+            }
+        }
+    }
+    post {
+        always {
+            sh "release-job-client ${JOB_BASE_NAME} ${BUILD_ID}"
+        }
+        success {
+            deleteDir()
+        }
+    }
+}
