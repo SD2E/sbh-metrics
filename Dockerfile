@@ -1,20 +1,21 @@
-FROM ubuntu:bionic
+FROM sd2e/reactors:python3
+# FROM sd2e/reactors:python3-edge
 
-RUN apt-get -y update && \
-    apt-get -y install \
-      git \
-      libxslt1-dev \
-      python3 \
-      python3-pip \
-      && \
-    apt-get clean
+# reactor.py, config.yml, and message.jsonschema will be automatically
+# added to the container when you run docker build or abaco deploy
 
+# Uninstall synbiohub_adapter and friends
+#   I'm erring on the side of caution, I'm not sure all three have to be uninstalled
+RUN pip3 uninstall -y synbiohub_adapter pySBOLx pysbol
+
+# Now install the latest synbiohub_adapter
 RUN pip3 install \
       --process-dependency-link \
       git+https://github.com/SD2E/synbiohub_adapter.git
 
+# Use TACC's bacanora for robust upload and download
+RUN pip3 install git+https://github.com/SD2E/bacanora.git
+
 ADD sbh-metrics.py /sbh-metrics.py
 ADD sd2 /sd2
-
-ENTRYPOINT ["python3", "/sbh-metrics.py"]
-CMD ["--help"]
+ADD reactor.ini /reactor.ini

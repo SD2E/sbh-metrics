@@ -295,7 +295,8 @@ def load_writers(config, writers_section='writers'):
     return result
 
 
-def instantiate_metric(metric_class, sbh_url, sbh_user=None, sbh_password=None):
+def instantiate_metric(metric_class, sbh_url, sbh_user=None,
+                       sbh_password=None):
     instance = metric_class(sbh_url)
     if sbh_user and sbh_password:
         instance.login(sbh_user, sbh_password)
@@ -307,7 +308,9 @@ def parse_args(args):
     parser.add_argument("config", type=argparse.FileType('r'),
                         metavar="CONFIG_FILE")
     parser.add_argument('-d', '--debug', action='store_true')
-    args = parser.parse_args()
+    parser.add_argument('-u', '--sbh-user', metavar='SYNBIOHUB_USER')
+    parser.add_argument('-p', '--sbh-password', metavar='SYNBIOHUB_PASSWORD')
+    args = parser.parse_args(args)
     return args
 
 
@@ -320,9 +323,7 @@ def init_logging(debug=False):
     logging.basicConfig(format=msgFormat, datefmt=dateFormat, level=level)
 
 
-def main(argv):
-    if not argv:
-        argv = sys.argv
+def main(argv=None):
     args = parse_args(argv)
 
     # Init logging
@@ -335,9 +336,14 @@ def main(argv):
         print('No "metrics" section found in {} configuration')
         sys.exit(1)
 
-    sbh_url = config.get(S_SYNBIOHUB, O_URL, fallback=sbha.SD2Constants.SD2_SERVER)
-    sbh_user = config.get(S_SYNBIOHUB, O_USER, fallback=None)
-    sbh_password = config.get(S_SYNBIOHUB, O_PASSWORD, fallback=None)
+    sbh_url = config.get(S_SYNBIOHUB, O_URL,
+                         fallback=sbha.SD2Constants.SD2_SERVER)
+    sbh_user = args.sbh_user
+    if not sbh_user:
+        sbh_user = config.get(S_SYNBIOHUB, O_USER, fallback=None)
+    sbh_password = args.sbh_password
+    if not sbh_password:
+        sbh_password = config.get(S_SYNBIOHUB, O_PASSWORD, fallback=None)
 
     metrics = []
     for option, value in config.items('metrics'):
@@ -373,4 +379,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

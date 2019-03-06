@@ -1,3 +1,8 @@
 *~
 metrics.ini
 __pycache__
+
+# TACC related files
+secrets.json
+.ACTOR_ID*
+reactor.ini
