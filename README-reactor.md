@@ -22,8 +22,14 @@ You might have to refresh your tacc tokens...
 # First, login to docker hub so the image can be pushed
 docker login
 
-# Next, deploy the actor
+# Make sure you have a fresh token at TACC
+auth-tokens-refresh
+
+# Next, deploy the actor - this will provide the ACTOR_ID
 abaco deploy
+
+# Give the Jenkins user permission to execute
+abaco permissions -u sd2emon -p EXECUTE ACTOR_ID
 ```
 
 At the end of the deploy, the actor id is displayed.

@@ -10,8 +10,8 @@ pipeline {
         AGAVE_USERNAME    = credentials('sd2emon-tacc-username')
         AGAVE_PASSWORD    = credentials('sd2emon-tacc-password')
         PATH = "${HOME}/bin:${HOME}/sd2e-cloud-cli/bin:${env.PATH}"
-        ACTOR_ID = 'ojrNbYYK31BDD'
-        }
+        ACTOR_ID = '3bZ8l5zL1KqXP'
+    }
     stages {
 
         stage('Create Oauth client') {
@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Message the Reactor') {
             steps {
-                sh "abaco run -m '{\"uri\": \"agave://data-tacc-work-tmitchel/sd2metrics/\"}' -V ${ACTOR_ID}"
+                sh "abaco run -m '{\"uri\": \"agave://data-sd2e-community/synbiohub/metrics/\"}' -V ${ACTOR_ID}"
             }
         }
     }
