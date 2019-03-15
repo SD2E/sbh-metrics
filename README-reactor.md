@@ -25,8 +25,11 @@ docker login
 # Make sure you have a fresh token at TACC
 auth-tokens-refresh
 
-# Next, deploy the actor
+# Next, deploy the actor - this will provide the ACTOR_ID
 abaco deploy
+
+# Give the Jenkins user permission to execute
+abaco permissions -u sd2emon -p EXECUTE ACTOR_ID
 ```
 
 At the end of the deploy, the actor id is displayed.
