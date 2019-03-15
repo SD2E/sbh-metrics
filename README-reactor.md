@@ -22,6 +22,9 @@ You might have to refresh your tacc tokens...
 # First, login to docker hub so the image can be pushed
 docker login
 
+# Make sure you have a fresh token at TACC
+auth-tokens-refresh
+
 # Next, deploy the actor
 abaco deploy
 ```
