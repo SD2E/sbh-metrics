@@ -10,7 +10,7 @@ pipeline {
         AGAVE_USERNAME    = credentials('sd2emon-tacc-username')
         AGAVE_PASSWORD    = credentials('sd2emon-tacc-password')
         PATH = "${HOME}/bin:${HOME}/sd2e-cloud-cli/bin:${env.PATH}"
-        ACTOR_ID = '3bZ8l5zL1KqXP'
+        ACTOR_ID = 'z10QWyAy15qpK'
     }
     stages {
 
