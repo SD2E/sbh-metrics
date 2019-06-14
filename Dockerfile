@@ -10,7 +10,6 @@ RUN pip3 uninstall -y synbiohub_adapter pySBOLx pysbol
 
 # Now install the latest synbiohub_adapter
 RUN pip3 install \
-      --process-dependency-link \
       git+https://github.com/SD2E/synbiohub_adapter.git
 
 # Use TACC's bacanora for robust upload and download

@@ -5,3 +5,4 @@ __all__ = [
 
 from .api import DataItem, DataMetric
 from .stubs import StubsMetric
+from .bugged import BuggedLinksMetric
