@@ -3,7 +3,7 @@
 
 ```
 # The image tag must start with your Docker Hub organization
-docker build --tag tcmitchell/sbh-metrics-reactor:0.1
+docker build --tag tcmitchell/sbh-metrics-reactor:1.2
 ```
 
 
