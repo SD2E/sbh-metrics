@@ -9,13 +9,13 @@ container.
 1. Build the docker image
 
     ```
-    docker build --tag tcmitchell/sbh-metrics-reactor:1.1 .
+    docker build --tag tcmitchell/sbh-metrics-reactor:1.2 .
     ```
 
 2. Run the docker image and mount the current directory into the running container
 
     ```
-    docker run -v$(pwd):/sbh-metrics --rm -it --entrypoint /bin/bash tcmitchell/sbh-metrics-reactor:1.1
+    docker run -v$(pwd):/sbh-metrics --rm -it --entrypoint /bin/bash tcmitchell/sbh-metrics-reactor:1.2
     ```
 
 4. Set up an appropriate config file

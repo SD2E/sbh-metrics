@@ -6,4 +6,4 @@ REACTOR_NAME=sbh-metrics
 # Docker settings
 DOCKER_HUB_ORG=tcmitchell
 DOCKER_IMAGE_TAG=sbh-metrics-reactor
-DOCKER_IMAGE_VERSION=1.1
+DOCKER_IMAGE_VERSION=1.2
