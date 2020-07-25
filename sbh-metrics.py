@@ -17,6 +17,103 @@ O_USER = 'user'
 O_PASSWORD = 'password'
 
 
+class StrainsMetric(sd2.metric.DataMetric):
+
+    def __init__(self, url):
+        super().__init__(url)
+
+    @property
+    def strains(self):
+        sparql_query = '''
+          PREFIX sbol: <http://sbols.org/v2#>
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          SELECT ?strain
+          WHERE { ?strain rdf:type <http://sbols.org/v2#ModuleDefinition> ;
+                          sbol:role <http://purl.obolibrary.org/obo/NCIT_C14419> .
+                }
+        '''
+        result = self._query.fetch_SPARQL(self._query._server,
+                                          sparql_query)
+        return self._query.format_query_result(result, ['strain'])
+
+    def fetch(self):
+        result = []
+        timestamp = time.time()
+        val = len(self.strains)
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                          name='Strains',
+                                          value=val))
+        return result
+
+
+class PathwayStrainsMetric(sd2.metric.DataMetric):
+
+    def __init__(self, url):
+        super().__init__(url)
+
+    @property
+    def pathway_strains(self):
+        sparql_query = '''
+          PREFIX sbol: <http://sbols.org/v2#>
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          SELECT ?strain
+          WHERE { ?strain rdf:type <http://sbols.org/v2#ModuleDefinition> ;
+                          sbol:role <http://purl.obolibrary.org/obo/NCIT_C14419> ;
+                          sbol:module ?mod .
+                  ?mod sbol:definition ?pathway .
+                  ?pathway sbol:role <http://purl.obolibrary.org/obo/NCIT_C20633>
+                }
+        '''
+        result = self._query.fetch_SPARQL(self._query._server,
+                                          sparql_query)
+        return self._query.format_query_result(result, ['strain'])
+
+    def fetch(self):
+        result = []
+        timestamp = time.time()
+        val = len(self.pathway_strains)
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                          name='Pathway Strains',
+                                          value=val))
+        return result
+
+
+class TruthTableStrainsMetric(sd2.metric.DataMetric):
+
+    def __init__(self, url):
+        super().__init__(url)
+
+    @property
+    def truth_table_strains(self):
+        sparql_query = '''
+          PREFIX sbol: <http://sbols.org/v2#>
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX dcterms: <http://purl.org/dc/terms/>
+          SELECT ?strain
+          WHERE { ?strain rdf:type <http://sbols.org/v2#ModuleDefinition> ;
+                          sbol:role <http://purl.obolibrary.org/obo/NCIT_C14419> ;
+                          sbol:module ?mod .
+                  ?mod sbol:definition ?pathway .
+                  ?pathway sbol:role <http://purl.obolibrary.org/obo/NCIT_C20633> ;
+                           sbol:attachment ?attach .
+                  ?attach dcterms:title ?name
+                  FILTER regex(?name, "Truth_Table.csv$")
+                }
+        '''
+        result = self._query.fetch_SPARQL(self._query._server,
+                                          sparql_query)
+        return self._query.format_query_result(result, ['strain'])
+
+    def fetch(self):
+        result = []
+        timestamp = time.time()
+        val = len(self.truth_table_strains)
+        result.append(sd2.metric.DataItem(timestamp=timestamp,
+                                          name='Truth Table Strains',
+                                          value=val))
+        return result
+
+
 class RiboswitchesMetric(sd2.metric.DataMetric):
 
     def __init__(self, url):
