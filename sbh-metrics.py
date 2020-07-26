@@ -96,7 +96,8 @@ class TruthTableStrainsMetric(sd2.metric.DataMetric):
                   ?mod sbol:definition ?pathway .
                   ?pathway sbol:role <http://purl.obolibrary.org/obo/NCIT_C20633> ;
                            sbol:attachment ?attach .
-                  ?attach dcterms:title ?name
+                  ?attach dcterms:title ?name ;
+                          sbol:format <http://identifiers.org/edam/format_3752>
                   FILTER regex(?name, "Truth_Table.csv$")
                 }
         '''
