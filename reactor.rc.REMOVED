@@ -1,0 +1,8 @@
+This repo must now be deployed using `tapis actors deploy` 
+to take advantage of the cron features in the `project.ini`
+file. 
+
+See this URL for details on Tapis CLI actors commands:
+
+https://tapis-cli.readthedocs.io/en/latest/usage/actors.html
+

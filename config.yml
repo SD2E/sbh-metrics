@@ -9,3 +9,6 @@ logs:
 # The config file to pass to the metrics gatherer
 metrics:
   config: /reactor.ini
+
+tapis:
+  destination: agave://data-sd2e-community/synbiohub/metrics/
